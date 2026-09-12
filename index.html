@@ -23,6 +23,139 @@
             margin: 0;
             position: relative;
             overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* Кастомный курсор — основной */
+        .custom-cursor {
+            position: fixed;
+            width: 28px;
+            height: 28px;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s ease-out;
+            will-change: transform;
+        }
+
+        .custom-cursor::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, #e0aaff 0%, #c77dff 40%, transparent 70%);
+            box-shadow: 0 0 15px #c77dff, 0 0 30px #9b5de5;
+            animation: cursorPulse 1.6s ease-in-out infinite alternate;
+        }
+
+        .custom-cursor::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px #fff, 0 0 20px #c77dff;
+        }
+
+        @keyframes cursorPulse {
+            from { transform: scale(1); opacity: 0.9; }
+            to { transform: scale(1.15); opacity: 1; }
+        }
+
+        /* Второй слой курсора — хвост */
+        .custom-cursor-trail {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 2px solid #c77dff60;
+            box-shadow: 0 0 20px #9b5de540;
+            transition: transform 0.25s ease-out, width 0.15s, height 0.15s;
+            will-change: transform;
+        }
+
+        .custom-cursor.clicking::before {
+            animation: cursorClick 0.3s ease-out;
+        }
+
+        @keyframes cursorClick {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.6); filter: brightness(1.8); }
+            100% { transform: scale(1); }
+        }
+
+        /* Рябь при клике */
+        .click-ripple {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid #e0aaff;
+            pointer-events: none;
+            z-index: 99997;
+            transform: translate(-50%, -50%);
+            animation: rippleExpand 0.7s ease-out forwards;
+            box-shadow: 0 0 20px #c77dff, inset 0 0 15px #9b5de5;
+        }
+
+        @keyframes rippleExpand {
+            0% {
+                width: 20px;
+                height: 20px;
+                opacity: 1;
+                border-width: 3px;
+            }
+            100% {
+                width: 140px;
+                height: 140px;
+                opacity: 0;
+                border-width: 1px;
+            }
+        }
+
+        /* Частицы при клике */
+        .click-particle {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99997;
+            transform: translate(-50%, -50%);
+            animation: particleBurst 0.7s ease-out forwards;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        @keyframes particleBurst {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(-50% + var(--px, 0)), calc(-50% + var(--py, 0))) scale(0.2);
+                opacity: 0;
+            }
+        }
+
+        /* Свечение под курсором */
+        .cursor-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            pointer-events: none;
+            z-index: 1;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(155, 93, 229, 0.08), transparent 70%);
+            transition: transform 0.4s ease-out;
+            will-change: transform;
         }
 
         /* ===== ЭКРАН ЗАГРУЗКИ (10 секунд) ===== */
@@ -182,7 +315,7 @@
             box-shadow: 0 0 20px #9b5de5, 0 4px 12px black, inset 0 0 12px #c77dff40;
             text-shadow: 0 0 10px #c77dff;
             backdrop-filter: blur(6px);
-            cursor: pointer;
+            cursor: none;
             transition: all 0.2s ease;
         }
 
@@ -207,6 +340,8 @@
             opacity: 0;
             transform: scale(0.9);
             transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 2;
         }
 
         .casino-container.revealed {
@@ -260,7 +395,7 @@
             border-radius: 50%;
             box-shadow: 0 0 0 8px #2a1a3a, 0 0 0 12px #b87aff, 0 15px 35px black;
             transition: filter 0.2s;
-            cursor: pointer;
+            cursor: none;
         }
 
         canvas#wheelCanvas:hover {
@@ -304,10 +439,31 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             box-shadow: 0 10px 0 #4e1a7a, 0 12px 22px black, 0 0 25px #c77dff;
-            cursor: pointer;
+            cursor: none;
             transition: all 0.06s ease;
             border: 1px solid #f3e8ff;
             text-shadow: 0 1px 0 #f3e8ff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spin-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.6), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .spin-btn:active:not(:disabled)::after {
+            opacity: 1;
+            animation: btnFlash 0.4s ease-out;
+        }
+
+        @keyframes btnFlash {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         .spin-btn:active:not(:disabled) {
@@ -319,7 +475,7 @@
             opacity: 0.5;
             transform: translateY(6px);
             box-shadow: 0 4px 0 #4e1a7a, 0 6px 10px black;
-            cursor: not-allowed;
+            cursor: none;
             filter: grayscale(0.4);
         }
 
@@ -334,9 +490,11 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             box-shadow: 0 8px 0 #11061f, 0 10px 18px black, 0 0 20px #9b5de580;
-            cursor: pointer;
+            cursor: none;
             transition: all 0.08s ease;
             text-shadow: 0 0 8px #c77dff;
+            position: relative;
+            overflow: hidden;
         }
 
         .withdraw-btn:active:not(:disabled) {
@@ -348,7 +506,7 @@
             opacity: 0.4;
             transform: translateY(5px);
             box-shadow: 0 3px 0 #11061f, 0 4px 8px black;
-            cursor: not-allowed;
+            cursor: none;
             filter: grayscale(0.6);
             border-color: #6a4a8a;
             color: #8a6aaa;
@@ -365,7 +523,7 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             box-shadow: 0 8px 0 #11061f, 0 10px 18px black, 0 0 20px #c77dff80;
-            cursor: pointer;
+            cursor: none;
             transition: all 0.08s ease;
             text-shadow: 0 0 8px #e0aaff;
         }
@@ -379,7 +537,7 @@
             opacity: 0.4;
             transform: translateY(5px);
             box-shadow: 0 3px 0 #11061f, 0 4px 8px black;
-            cursor: not-allowed;
+            cursor: none;
             filter: grayscale(0.6);
         }
 
@@ -555,7 +713,7 @@
         }
 
         .dev-name.mschvetochek {
-            cursor: pointer;
+            cursor: none;
             padding: 4px 12px;
             border-radius: 20px;
             background: #2a1040;
@@ -597,7 +755,7 @@
             letter-spacing: 4px;
             text-transform: uppercase;
             box-shadow: 0 10px 0 #4e0a2a, 0 12px 25px black, 0 0 30px #ff3a7a80;
-            cursor: pointer;
+            cursor: none;
             transition: all 0.08s ease;
             text-shadow: 0 0 12px #ff3a7a, 0 2px 4px black;
             animation: bardelGlow 2s ease-in-out infinite alternate;
@@ -862,7 +1020,7 @@
             font-size: 1.1rem;
             font-weight: 600;
             letter-spacing: 1px;
-            cursor: pointer;
+            cursor: none;
             transition: all 0.15s ease;
             display: flex;
             justify-content: space-between;
@@ -916,7 +1074,7 @@
             font-size: 1.3rem;
             font-weight: 800;
             letter-spacing: 1px;
-            cursor: pointer;
+            cursor: none;
             transition: all 0.15s ease;
             text-align: center;
         }
@@ -953,6 +1111,7 @@
             transition: border-color 0.2s;
             font-family: inherit;
             width: 100%;
+            cursor: none;
         }
 
         .modal-custom-amount input:focus {
@@ -979,7 +1138,7 @@
             font-weight: 800;
             letter-spacing: 2px;
             text-transform: uppercase;
-            cursor: pointer;
+            cursor: none;
             transition: all 0.08s ease;
             font-family: inherit;
         }
@@ -1000,7 +1159,7 @@
             opacity: 0.5;
             transform: translateY(5px);
             box-shadow: 0 3px 0 #4e1a7a, 0 4px 8px black;
-            cursor: not-allowed;
+            cursor: none;
             filter: grayscale(0.5);
         }
 
@@ -1024,7 +1183,7 @@
             border: none;
             color: #b794d4;
             font-size: 2rem;
-            cursor: pointer;
+            cursor: none;
             line-height: 1;
             transition: color 0.2s, transform 0.2s;
             width: 40px;
@@ -1197,10 +1356,38 @@
             .bardel-toast-emoji {
                 font-size: 2.8rem;
             }
+            .custom-cursor {
+                width: 22px;
+                height: 22px;
+            }
+            .custom-cursor-trail {
+                width: 32px;
+                height: 32px;
+            }
+            .cursor-glow {
+                width: 180px;
+                height: 180px;
+            }
+        }
+
+        /* На тач-устройствах отключаем кастомный курсор */
+        @media (hover: none) and (pointer: coarse) {
+            body { cursor: auto; }
+            .custom-cursor, .custom-cursor-trail, .cursor-glow { display: none; }
+            .rights-badge, .spin-btn, .withdraw-btn, .deposit-btn, .bardel-btn,
+            .dev-name.mschvetochek, .modal-close, .modal-btn, .withdraw-option,
+            .deposit-option, .modal-custom-amount input, canvas#wheelCanvas {
+                cursor: auto;
+            }
         }
     </style>
 </head>
 <body>
+
+    <!-- Кастомный курсор -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <div class="custom-cursor-trail" id="cursorTrail"></div>
+    <div class="custom-cursor" id="customCursor"></div>
 
     <!-- ===== ЭКРАН ЗАГРУЗКИ (10 секунд) ===== -->
     <div class="preloader" id="preloader">
@@ -1374,6 +1561,89 @@
 
     <script>
         (function() {
+            // ===== КАСТОМНЫЙ КУРСОР =====
+            const customCursor = document.getElementById('customCursor');
+            const cursorTrail = document.getElementById('cursorTrail');
+            const cursorGlow = document.getElementById('cursorGlow');
+
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            let trailX = mouseX;
+            let trailY = mouseY;
+            let glowX = mouseX;
+            let glowY = mouseY;
+
+            const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+            if (!isTouchDevice) {
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    customCursor.style.left = mouseX + 'px';
+                    customCursor.style.top = mouseY + 'px';
+                });
+
+                // Плавное движение хвоста и свечения
+                function animateCursor() {
+                    trailX += (mouseX - trailX) * 0.18;
+                    trailY += (mouseY - trailY) * 0.18;
+                    glowX += (mouseX - glowX) * 0.08;
+                    glowY += (mouseY - glowY) * 0.08;
+
+                    cursorTrail.style.left = trailX + 'px';
+                    cursorTrail.style.top = trailY + 'px';
+                    cursorGlow.style.left = glowX + 'px';
+                    cursorGlow.style.top = glowY + 'px';
+
+                    requestAnimationFrame(animateCursor);
+                }
+                animateCursor();
+            }
+
+            // ---- Эффекты нажатия ----
+            function createRipple(x, y) {
+                const ripple = document.createElement('div');
+                ripple.className = 'click-ripple';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                document.body.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 700);
+            }
+
+            function createParticles(x, y) {
+                const colors = ['#e0aaff', '#c77dff', '#9b5de5', '#ff7aa2', '#f3e8ff'];
+                const count = 8;
+                for (let i = 0; i < count; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'click-particle';
+                    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.5;
+                    const dist = 50 + Math.random() * 60;
+                    p.style.left = x + 'px';
+                    p.style.top = y + 'px';
+                    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    p.style.color = p.style.background;
+                    p.style.setProperty('--px', Math.cos(angle) * dist + 'px');
+                    p.style.setProperty('--py', Math.sin(angle) * dist + 'px');
+                    document.body.appendChild(p);
+                    setTimeout(() => p.remove(), 700);
+                }
+            }
+
+            document.addEventListener('mousedown', (e) => {
+                customCursor.classList.add('clicking');
+                cursorTrail.style.width = '60px';
+                cursorTrail.style.height = '60px';
+                createRipple(e.clientX, e.clientY);
+                createParticles(e.clientX, e.clientY);
+                if (navigator.vibrate) navigator.vibrate(15);
+            });
+
+            document.addEventListener('mouseup', () => {
+                customCursor.classList.remove('clicking');
+                cursorTrail.style.width = '40px';
+                cursorTrail.style.height = '40px';
+            });
+
             // ===== ЭКРАН ЗАГРУЗКИ (10 секунд) =====
             const preloader = document.getElementById('preloader');
             const preloaderBar = document.getElementById('preloaderBar');
@@ -1924,8 +2194,8 @@
             // ---- Клик на Mschvetochek → знаки вопроса ----
             function spawnQuestionMarks(count) {
                 const rect = mschvetochek.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
 
                 for (let i = 0; i < count; i++) {
                     setTimeout(() => {
@@ -1937,8 +2207,8 @@
                         const offsetY = -50 - Math.random() * 150;
                         const rotation = (Math.random() - 0.5) * 90;
 
-                        q.style.left = centerX + 'px';
-                        q.style.top = centerY + 'px';
+                        q.style.left = cx + 'px';
+                        q.style.top = cy + 'px';
                         q.style.setProperty('--tx', offsetX + 'px');
                         q.style.setProperty('--ty', offsetY + 'px');
                         q.style.setProperty('--rot', rotation + 'deg');
