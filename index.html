@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фиолетовое Казино • Колесо Фортуны</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #2a1040, #0d0418);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            padding: 16px;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ===== ЭКРАН ЗАГРУЗКИ (10 секунд) ===== */
+        .preloader {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 30% 20%, #2a1040, #0d0418);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            padding: 20px;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .preloader-logo {
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #f3e8ff, #c77dff, #9b5de5);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 25px #c77dff) drop-shadow(0 0 50px #9b5de5);
+            margin-bottom: 15px;
+            animation: preloaderPulse 1.6s ease-in-out infinite alternate;
+            text-align: center;
+        }
+
+        @keyframes preloaderPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.06); }
+        }
+
+        .preloader-sub {
+            color: #b794d4;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .preloader-spinner {
+            width: 70px;
+            height: 70px;
+            border: 5px solid #4e1a7a;
+            border-top-color: #e0aaff;
+            border-right-color: #c77dff;
+            border-radius: 50%;
+            animation: spinLoader 1s linear infinite;
+            box-shadow: 0 0 25px #9b5de5, inset 0 0 15px #c77dff40;
+            margin-bottom: 40px;
+        }
+
+        @keyframes spinLoader {
+            to { transform: rotate(360deg); }
+        }
+
+        .friday-joke {
+            background: linear-gradient(160deg, #2a1040, #150722);
+            border: 2px solid #c77dff;
+            border-radius: 30px;
+            padding: 22px 32px;
+            max-width: 560px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 30px #9b5de5, 0 0 60px #c77dff40, inset 0 0 25px #9b5de520;
+            animation: jokeFadeIn 1.2s ease;
+        }
+
+        @keyframes jokeFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .friday-joke-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #ff7aa2, #c77dff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px #ff3a7a);
+            margin-bottom: 12px;
+        }
+
+        .friday-joke-text {
+            color: #e0aaff;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #9b5de5;
+        }
+
+        .friday-joke-text strong {
+            color: #ff7aa2;
+            font-weight: 800;
+            text-shadow: 0 0 12px #ff3a7a;
+        }
+
+        .preloader-progress {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 400px;
+            height: 10px;
+            background: #1a0e2a;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #b87aff60;
+            box-shadow: inset 0 0 10px #000;
+        }
+
+        .preloader-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #9b5de5, #c77dff, #e0aaff);
+            border-radius: 20px;
+            box-shadow: 0 0 15px #c77dff;
+            transition: width 0.1s linear;
+        }
+
+        .preloader-timer {
+            margin-top: 12px;
+            color: #b794d4;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        /* ===== ОСНОВНОЙ САЙТ ===== */
+        .rights-badge {
+            position: fixed;
+            top: 18px;
+            right: 24px;
+            z-index: 999;
+            background: linear-gradient(135deg, #2a1040, #1a0a26);
+            border: 2px solid #c77dff;
+            border-radius: 40px;
+            padding: 8px 22px;
+            color: #e0aaff;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px #9b5de5, 0 4px 12px black, inset 0 0 12px #c77dff40;
+            text-shadow: 0 0 10px #c77dff;
+            backdrop-filter: blur(6px);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .rights-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px #c77dff, 0 6px 16px black, inset 0 0 18px #c77dff60;
+        }
+
+        .rights-badge:active {
+            transform: scale(0.95);
+        }
+
+        .casino-container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(30, 12, 50, 0.9);
+            backdrop-filter: blur(8px);
+            border-radius: 60px 60px 40px 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), 0 0 0 2px #b87aff inset, 0 0 30px #9b5de5;
+            padding: 30px 30px 40px;
+            border: 1px solid #c77dff;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .casino-container.revealed {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #e0aaff;
+            text-shadow: 0 0 10px #9b5de5, 0 4px 8px black;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #f3e8ff, #c77dff, #9b5de5);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 4px black);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #b794d4;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin: 10px 0 25px;
+        }
+
+        .wheel-canvas-container {
+            position: relative;
+            width: 380px;
+            height: 380px;
+        }
+
+        canvas#wheelCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 50%;
+            box-shadow: 0 0 0 8px #2a1a3a, 0 0 0 12px #b87aff, 0 15px 35px black;
+            transition: filter 0.2s;
+            cursor: pointer;
+        }
+
+        canvas#wheelCanvas:hover {
+            filter: brightness(1.12);
+        }
+
+        .pointer {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            filter: drop-shadow(0 8px 6px black);
+            z-index: 10;
+            color: #e0aaff;
+            text-shadow: 0 0 12px #c77dff, 0 0 25px #9b5de5;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .pointer::after {
+            content: "▼";
+        }
+
+        .buttons-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .spin-btn {
+            background: radial-gradient(circle at 30% 10%, #e0aaff, #9b5de5);
+            border: none;
+            border-radius: 60px;
+            padding: 18px 40px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1a0a26;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 10px 0 #4e1a7a, 0 12px 22px black, 0 0 25px #c77dff;
+            cursor: pointer;
+            transition: all 0.06s ease;
+            border: 1px solid #f3e8ff;
+            text-shadow: 0 1px 0 #f3e8ff;
+        }
+
+        .spin-btn:active:not(:disabled) {
+            transform: translateY(6px);
+            box-shadow: 0 4px 0 #4e1a7a, 0 8px 16px black, 0 0 35px #c77dff;
+        }
+
+        .spin-btn:disabled {
+            opacity: 0.5;
+            transform: translateY(6px);
+            box-shadow: 0 4px 0 #4e1a7a, 0 6px 10px black;
+            cursor: not-allowed;
+            filter: grayscale(0.4);
+        }
+
+        .withdraw-btn {
+            background: linear-gradient(180deg, #2a1a3a, #1a0a26);
+            border: 2px solid #b87aff;
+            border-radius: 60px;
+            padding: 18px 40px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #e0aaff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 0 #11061f, 0 10px 18px black, 0 0 20px #9b5de580;
+            cursor: pointer;
+            transition: all 0.08s ease;
+            text-shadow: 0 0 8px #c77dff;
+        }
+
+        .withdraw-btn:active:not(:disabled) {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #11061f, 0 6px 14px black, 0 0 30px #c77dff;
+        }
+
+        .withdraw-btn:disabled {
+            opacity: 0.4;
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #11061f, 0 4px 8px black;
+            cursor: not-allowed;
+            filter: grayscale(0.6);
+            border-color: #6a4a8a;
+            color: #8a6aaa;
+        }
+
+        .deposit-btn {
+            background: linear-gradient(180deg, #4e1a7a, #2a1040);
+            border: 2px solid #e0aaff;
+            border-radius: 60px;
+            padding: 18px 40px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #f3e8ff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 0 #11061f, 0 10px 18px black, 0 0 20px #c77dff80;
+            cursor: pointer;
+            transition: all 0.08s ease;
+            text-shadow: 0 0 8px #e0aaff;
+        }
+
+        .deposit-btn:active:not(:disabled) {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #11061f, 0 6px 14px black, 0 0 30px #e0aaff;
+        }
+
+        .deposit-btn:disabled {
+            opacity: 0.4;
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #11061f, 0 4px 8px black;
+            cursor: not-allowed;
+            filter: grayscale(0.6);
+        }
+
+        .stats-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            background: #1a0e2a;
+            border-radius: 80px;
+            padding: 20px 30px;
+            border: 2px solid #b87aff;
+            box-shadow: inset 0 0 20px #000000, 0 10px 18px #0000009b, 0 0 15px #9b5de560;
+            margin-bottom: 25px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #b794d4;
+            letter-spacing: 2px;
+        }
+
+        .stat-value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #e0aaff;
+            text-shadow: 0 0 15px #c77dff, 0 2px 4px black;
+            line-height: 1.2;
+            transition: transform 0.2s;
+        }
+
+        .stat-value.negative {
+            color: #ff7aa2;
+            text-shadow: 0 0 15px #ff3a7a, 0 2px 4px black;
+        }
+
+        .stat-value.bump {
+            animation: bumpValue 0.4s ease;
+        }
+
+        @keyframes bumpValue {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.35); }
+            100% { transform: scale(1); }
+        }
+
+        .chances-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .chance-card {
+            background: #1a0e2a;
+            border-radius: 30px;
+            padding: 12px 10px;
+            text-align: center;
+            border: 1px solid #b87aff80;
+            box-shadow: 0 5px 0 #0d0418, 0 8px 14px black, 0 0 10px #9b5de540;
+            transition: 0.1s;
+        }
+
+        .chance-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            box-shadow: 0 0 12px currentColor, 0 2px 4px black;
+        }
+
+        .chance-name {
+            font-weight: 700;
+            color: #e0aaff;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .chance-name.negative {
+            color: #ff7aa2;
+            text-shadow: 0 0 8px #ff3a7a;
+        }
+
+        .chance-prob {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #d9aaff;
+            text-shadow: 0 0 12px #c77dff;
+        }
+
+        .win-message {
+            min-height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #e0aaff;
+            text-shadow: 0 0 20px #c77dff, 0 0 35px #9b5de5, 0 4px 8px black;
+            padding: 10px;
+            border-radius: 40px;
+            transition: 0.2s;
+            text-align: center;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .win-message.win-anim {
+            animation: winFlash 0.8s ease;
+        }
+
+        @keyframes winFlash {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.15); }
+            60% { transform: scale(0.98); }
+            100% { transform: scale(1); }
+        }
+
+        .win-message.lose-anim {
+            animation: loseShake 0.6s ease;
+        }
+
+        @keyframes loseShake {
+            0%, 100% { transform: translateX(0); }
+            15% { transform: translateX(-12px) rotate(-2deg); }
+            30% { transform: translateX(12px) rotate(2deg); }
+            45% { transform: translateX(-10px) rotate(-1.5deg); }
+            60% { transform: translateX(10px) rotate(1.5deg); }
+            80% { transform: translateX(-5px); }
+        }
+
+        /* ===== ПОЛЕ РАЗРАБОТЧИКОВ ===== */
+        .developers-field {
+            margin-top: 30px;
+            padding: 18px 25px;
+            background: linear-gradient(160deg, #1a0e2a, #0d0418);
+            border-radius: 30px;
+            border: 2px solid #b87aff80;
+            box-shadow: inset 0 0 20px #000000, 0 0 20px #9b5de540;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .dev-label {
+            color: #b794d4;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .dev-name {
+            color: #e0aaff;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 0 12px #c77dff;
+            transition: all 0.2s ease;
+        }
+
+        .dev-name.mschvetochek {
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #2a1040;
+            border: 1px solid #c77dff60;
+        }
+
+        .dev-name.mschvetochek:hover {
+            background: #3a1a5a;
+            border-color: #e0aaff;
+            box-shadow: 0 0 20px #c77dff;
+            transform: scale(1.08);
+        }
+
+        .dev-name.mschvetochek:active {
+            transform: scale(0.95);
+        }
+
+        .dev-divider {
+            color: #6a4a8a;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #6a4a8a;
+            margin-top: 14px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        /* Всплывающие монетки при выигрыше */
+        .coin-popup {
+            position: fixed;
+            font-size: 2.5rem;
+            z-index: 9997;
+            pointer-events: none;
+            animation: coinFly 1.5s ease-out forwards;
+            filter: drop-shadow(0 0 15px #ffd966);
+        }
+
+        @keyframes coinFly {
+            0% {
+                transform: translate(0, 0) scale(0.5) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+                transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.2) rotate(180deg);
+            }
+            100% {
+                transform: translate(calc(var(--tx, 0) * 2), calc(var(--ty, 0) - 200px)) scale(0.8) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Вспышка на экране */
+        .screen-flash {
+            position: fixed;
+            inset: 0;
+            z-index: 9996;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .screen-flash.win-flash {
+            background: radial-gradient(circle at center, rgba(224, 170, 255, 0.4), transparent 70%);
+            animation: flashAnim 0.6s ease-out;
+        }
+
+        .screen-flash.lose-flash {
+            background: radial-gradient(circle at center, rgba(255, 58, 122, 0.35), transparent 70%);
+            animation: flashAnim 0.6s ease-out;
+        }
+
+        @keyframes flashAnim {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Всплывающие знаки вопроса при клике на Mschvetochek */
+        .question-mark {
+            position: fixed;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #e0aaff;
+            text-shadow: 0 0 20px #c77dff, 0 0 40px #9b5de5;
+            pointer-events: none;
+            z-index: 9999;
+            animation: questionFloat 1.4s ease-out forwards;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        @keyframes questionFloat {
+            0% {
+                transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.3) rotate(var(--rot, 20deg));
+            }
+            60% {
+                opacity: 1;
+                transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, -80px))) scale(1.1) rotate(var(--rot, 20deg));
+            }
+            100% {
+                transform: translate(calc(-50% + var(--tx, 0px) * 1.5), calc(-50% + var(--ty, -80px) - 100px)) scale(0.7) rotate(calc(var(--rot, 20deg) * 2));
+                opacity: 0;
+            }
+        }
+
+        /* ---- Модальные окна ---- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 2, 12, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: linear-gradient(160deg, #2a1040, #150722);
+            border-radius: 40px;
+            padding: 35px 30px 30px;
+            max-width: 460px;
+            width: 100%;
+            border: 2px solid #c77dff;
+            box-shadow: 0 0 40px #9b5de5, 0 25px 50px black, inset 0 0 30px #9b5de530;
+            position: relative;
+            transform: scale(0.85);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-height: 92vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal h2 {
+            color: #e0aaff;
+            font-size: 1.8rem;
+            text-align: center;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px #c77dff, 0 3px 6px black;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            text-align: center;
+            color: #b794d4;
+            font-size: 0.95rem;
+            margin-bottom: 22px;
+            letter-spacing: 1px;
+        }
+
+        .modal-balance {
+            background: #1a0e2a;
+            border-radius: 30px;
+            padding: 16px 20px;
+            text-align: center;
+            border: 1px solid #b87aff80;
+            box-shadow: inset 0 0 15px #000000;
+            margin-bottom: 22px;
+        }
+
+        .modal-balance-label {
+            font-size: 0.85rem;
+            color: #b794d4;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .modal-balance-value {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #e0aaff;
+            text-shadow: 0 0 20px #c77dff, 0 2px 4px black;
+            line-height: 1.2;
+        }
+
+        .withdraw-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .withdraw-option {
+            background: #1a0e2a;
+            border: 2px solid #b87aff60;
+            border-radius: 30px;
+            padding: 14px 20px;
+            color: #e0aaff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .withdraw-option:hover {
+            background: #2a1040;
+            border-color: #c77dff;
+            box-shadow: 0 0 20px #9b5de580;
+            transform: translateX(4px);
+        }
+
+        .withdraw-option.selected {
+            background: #3a1a5a;
+            border-color: #e0aaff;
+            box-shadow: 0 0 25px #c77dff, inset 0 0 15px #c77dff30;
+        }
+
+        .withdraw-option .option-icon {
+            font-size: 1.5rem;
+            margin-right: 12px;
+        }
+
+        .withdraw-option .option-label {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .withdraw-option .option-amount {
+            color: #c77dff;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .deposit-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .deposit-option {
+            background: #1a0e2a;
+            border: 2px solid #b87aff60;
+            border-radius: 24px;
+            padding: 16px 10px;
+            color: #e0aaff;
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+        }
+
+        .deposit-option:hover {
+            background: #2a1040;
+            border-color: #c77dff;
+            box-shadow: 0 0 20px #9b5de580;
+            transform: translateY(-3px);
+        }
+
+        .deposit-option.selected {
+            background: #3a1a5a;
+            border-color: #e0aaff;
+            box-shadow: 0 0 25px #c77dff, inset 0 0 15px #c77dff30;
+        }
+
+        .modal-custom-amount {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .modal-custom-amount input {
+            flex: 1;
+            background: #1a0e2a;
+            border: 2px solid #b87aff60;
+            border-radius: 30px;
+            padding: 14px 22px;
+            color: #e0aaff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .modal-custom-amount input:focus {
+            border-color: #c77dff;
+            box-shadow: 0 0 15px #9b5de580;
+        }
+
+        .modal-custom-amount input::placeholder {
+            color: #6a4a8a;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            flex: 1;
+            border: none;
+            border-radius: 50px;
+            padding: 16px 20px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.08s ease;
+            font-family: inherit;
+        }
+
+        .modal-btn.confirm {
+            background: radial-gradient(circle at 30% 10%, #e0aaff, #9b5de5);
+            color: #1a0a26;
+            box-shadow: 0 8px 0 #4e1a7a, 0 10px 20px black, 0 0 25px #c77dff;
+            border: 1px solid #f3e8ff;
+        }
+
+        .modal-btn.confirm:active:not(:disabled) {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #4e1a7a, 0 6px 14px black, 0 0 35px #c77dff;
+        }
+
+        .modal-btn.confirm:disabled {
+            opacity: 0.5;
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #4e1a7a, 0 4px 8px black;
+            cursor: not-allowed;
+            filter: grayscale(0.5);
+        }
+
+        .modal-btn.cancel {
+            background: linear-gradient(180deg, #2a1a3a, #1a0a26);
+            color: #e0aaff;
+            border: 2px solid #b87aff;
+            box-shadow: 0 6px 0 #11061f, 0 8px 16px black;
+        }
+
+        .modal-btn.cancel:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #11061f, 0 4px 10px black;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: #b794d4;
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s, transform 0.2s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .modal-close:hover {
+            color: #e0aaff;
+            transform: rotate(90deg);
+            background: #9b5de530;
+        }
+
+        .modal-status {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            min-height: 22px;
+            color: #b794d4;
+        }
+
+        .modal-status.success {
+            color: #c77dff;
+            text-shadow: 0 0 10px #9b5de5;
+            font-weight: 700;
+        }
+
+        .modal-status.error {
+            color: #ff7aa2;
+            text-shadow: 0 0 10px #ff3a7a;
+            font-weight: 700;
+        }
+
+        /* Тост "Ярик лох" */
+        .yarik-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            background: linear-gradient(160deg, #2a1040, #150722);
+            border: 3px solid #c77dff;
+            border-radius: 40px;
+            padding: 40px 60px;
+            z-index: 2000;
+            box-shadow: 0 0 60px #9b5de5, 0 0 120px #c77dff80, 0 25px 50px black;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+        }
+
+        .yarik-toast.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .yarik-toast-text {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #ff7aa2, #ff3a7a, #c77dff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px #ff3a7a) drop-shadow(0 0 40px #c77dff);
+            animation: pulseYarik 1s ease-in-out infinite alternate;
+            white-space: nowrap;
+        }
+
+        @keyframes pulseYarik {
+            from { transform: scale(1); filter: drop-shadow(0 0 20px #ff3a7a) drop-shadow(0 0 40px #c77dff); }
+            to { transform: scale(1.08); filter: drop-shadow(0 0 30px #ff3a7a) drop-shadow(0 0 60px #c77dff); }
+        }
+
+        @media (max-width: 600px) {
+            .casino-container {
+                padding: 20px 15px 30px;
+                border-radius: 40px;
+            }
+            .wheel-canvas-container {
+                width: 280px;
+                height: 280px;
+            }
+            .spin-btn, .withdraw-btn, .deposit-btn {
+                font-size: 1.1rem;
+                padding: 13px 22px;
+            }
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            .stats-panel {
+                padding: 15px 10px;
+                gap: 10px;
+            }
+            .stat-value {
+                font-size: 1.3rem;
+            }
+            .win-message {
+                font-size: 1.2rem;
+            }
+            .rights-badge {
+                font-size: 0.7rem;
+                padding: 5px 12px;
+                top: 8px;
+                right: 8px;
+            }
+            .modal {
+                padding: 28px 18px 22px;
+            }
+            .modal h2 {
+                font-size: 1.3rem;
+            }
+            .modal-balance-value {
+                font-size: 1.8rem;
+            }
+            .modal-btn {
+                font-size: 1rem;
+                padding: 14px 12px;
+            }
+            .yarik-toast {
+                padding: 30px 30px;
+            }
+            .yarik-toast-text {
+                font-size: 2rem;
+                letter-spacing: 3px;
+            }
+            .preloader-logo {
+                font-size: 2.4rem;
+                letter-spacing: 5px;
+            }
+            .friday-joke {
+                padding: 16px 20px;
+            }
+            .friday-joke-title {
+                font-size: 1.2rem;
+            }
+            .friday-joke-text {
+                font-size: 0.9rem;
+            }
+            .developers-field {
+                padding: 14px 12px;
+                gap: 8px;
+            }
+            .dev-label {
+                font-size: 0.8rem;
+            }
+            .dev-name {
+                font-size: 1rem;
+            }
+            .question-mark {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== ЭКРАН ЗАГРУЗКИ (10 секунд) ===== -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-logo">💜 Казино</div>
+        <div class="preloader-sub">Загрузка удачи...</div>
+        <div class="preloader-spinner"></div>
+
+        <div class="friday-joke">
+            <div class="friday-joke-title">📅 Внимание!</div>
+            <div class="friday-joke-text">
+                Казино работает <strong>только по пятницам</strong>.<br>
+                Сегодня — <strong>«Дом Маши»</strong> 🏠✨<br>
+                <span style="font-size:0.9rem; opacity:0.8;">(шутка, конечно — играй когда хочешь 😉)</span>
+            </div>
+        </div>
+
+        <div class="preloader-progress">
+            <div class="preloader-progress-bar" id="preloaderBar"></div>
+        </div>
+        <div class="preloader-timer" id="preloaderTimer">Осталось: 10.0 сек</div>
+    </div>
+
+    <!-- Вспышка -->
+    <div class="screen-flash" id="screenFlash"></div>
+
+    <!-- Кликабельная подпись -->
+    <div class="rights-badge" id="rightsBadge">права фиксичка</div>
+
+    <div class="casino-container" id="casinoContainer">
+        <div class="header">
+            <h1>💜 Колесо Фортуны</h1>
+            <p>фиолетовая удача • шансы честные</p>
+        </div>
+
+        <div class="wheel-wrapper">
+            <div class="wheel-canvas-container">
+                <div class="pointer"></div>
+                <canvas id="wheelCanvas" width="600" height="600"></canvas>
+            </div>
+        </div>
+
+        <div class="buttons-row">
+            <button class="spin-btn" id="spinButton">Вращать</button>
+            <button class="deposit-btn" id="depositButton">💳 Пополнить</button>
+            <button class="withdraw-btn" id="withdrawButton">💰 Вывести</button>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-item">
+                <span class="stat-label">Баланс</span>
+                <span class="stat-value" id="balanceDisplay">1000</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Ставка</span>
+                <span class="stat-value" id="betDisplay">100</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Выигрыш</span>
+                <span class="stat-value" id="lastWinDisplay">0</span>
+            </div>
+        </div>
+
+        <div class="chances-grid" id="chancesGrid"></div>
+
+        <div class="win-message" id="winMessage">Крути колесо!</div>
+
+        <!-- ===== ПОЛЕ РАЗРАБОТЧИКОВ ===== -->
+        <div class="developers-field">
+            <span class="dev-label">Разработчики:</span>
+            <span class="dev-name">fiksychek</span>
+            <span class="dev-divider">/</span>
+            <span class="dev-name mschvetochek" id="mschvetochek">Mschvetochek</span>
+        </div>
+
+        <div class="footer-note">* Шансы соответствуют секторам, удача любит смелых</div>
+    </div>
+
+    <!-- Модальное окно пополнения -->
+    <div class="modal-overlay" id="depositModal">
+        <div class="modal">
+            <button class="modal-close" id="depositCloseBtn">×</button>
+            <h2>💳 Пополнение</h2>
+            <div class="modal-subtitle">Выберите сумму пополнения</div>
+
+            <div class="deposit-options" id="depositOptions">
+                <div class="deposit-option" data-amount="500">500 ₽</div>
+                <div class="deposit-option" data-amount="1000">1 000 ₽</div>
+                <div class="deposit-option" data-amount="5000">5 000 ₽</div>
+                <div class="deposit-option" data-amount="10000">10 000 ₽</div>
+                <div class="deposit-option" data-amount="50000">50 000 ₽</div>
+                <div class="deposit-option" data-amount="100000">100 000 ₽</div>
+            </div>
+
+            <div class="modal-custom-amount">
+                <input type="number" id="depositCustomInput" placeholder="Своя сумма (мин. 100)" min="100" step="100">
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="depositCancelBtn">Отмена</button>
+                <button class="modal-btn confirm" id="depositConfirmBtn" disabled>Пополнить</button>
+            </div>
+
+            <div class="modal-status" id="depositStatus"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно вывода -->
+    <div class="modal-overlay" id="withdrawModal">
+        <div class="modal">
+            <button class="modal-close" id="modalCloseBtn">×</button>
+            <h2>💸 Вывод средств</h2>
+            <div class="modal-subtitle">Выберите способ вывода</div>
+
+            <div class="modal-balance">
+                <div class="modal-balance-label">Доступно к выводу</div>
+                <div class="modal-balance-value" id="modalBalanceDisplay">1000</div>
+            </div>
+
+            <div class="withdraw-options">
+                <div class="withdraw-option" data-method="card" data-min="500">
+                    <span class="option-label">
+                        <span class="option-icon">💳</span>
+                        Банковская карта
+                    </span>
+                    <span class="option-amount">мин. 500 ₽</span>
+                </div>
+                <div class="withdraw-option" data-method="crypto" data-min="100">
+                    <span class="option-label">
+                        <span class="option-icon">₿</span>
+                        Крипто-кошелёк
+                    </span>
+                    <span class="option-amount">мин. 100 ₽</span>
+                </div>
+                <div class="withdraw-option" data-method="wallet" data-min="200">
+                    <span class="option-label">
+                        <span class="option-icon">📱</span>
+                        Электронный кошелёк
+                    </span>
+                    <span class="option-amount">мин. 200 ₽</span>
+                </div>
+            </div>
+
+            <div class="modal-custom-amount">
+                <input type="number" id="customAmountInput" placeholder="Своя сумма (необязательно)" min="1" step="1">
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="modalCancelBtn">Отмена</button>
+                <button class="modal-btn confirm" id="modalConfirmBtn" disabled>Вывести</button>
+            </div>
+
+            <div class="modal-status" id="modalStatus"></div>
+        </div>
+    </div>
+
+    <!-- Тост "Ярик лох" -->
+    <div class="yarik-toast" id="yarikToast">
+        <div class="yarik-toast-text">Ярик лох</div>
+    </div>
+
+    <script>
+        (function() {
+            // ===== ЭКРАН ЗАГРУЗКИ (10 секунд) =====
+            const preloader = document.getElementById('preloader');
+            const preloaderBar = document.getElementById('preloaderBar');
+            const preloaderTimer = document.getElementById('preloaderTimer');
+            const casinoContainer = document.getElementById('casinoContainer');
+
+            const LOAD_DURATION = 10000;
+            const loadStart = Date.now();
+
+            const loadingInterval = setInterval(() => {
+                const elapsed = Date.now() - loadStart;
+                const progress = Math.min(elapsed / LOAD_DURATION * 100, 100);
+                preloaderBar.style.width = progress + '%';
+
+                const remaining = Math.max(0, (LOAD_DURATION - elapsed) / 1000);
+                preloaderTimer.textContent = `Осталось: ${remaining.toFixed(1)} сек`;
+
+                if (elapsed >= LOAD_DURATION) {
+                    clearInterval(loadingInterval);
+                    preloader.classList.add('hidden');
+
+                    setTimeout(() => {
+                        casinoContainer.classList.add('revealed');
+                    }, 200);
+                }
+            }, 50);
+
+            // ---- Конфигурация колеса ----
+            const SECTORS = [
+                { name: '×2',    color: '#9b5de5', winMultiplier: 2,   probability: 0.15 },
+                { name: '×0',    color: '#1a0a26', winMultiplier: 0,   probability: 0.20 },
+                { name: '×5',    color: '#c77dff', winMultiplier: 5,   probability: 0.08 },
+                { name: '×-1',   color: '#7b2cbf', winMultiplier: -1,  probability: 0.15 },
+                { name: '×10',   color: '#e0aaff', winMultiplier: 10,  probability: 0.04 },
+                { name: '×-0.5', color: '#5a189a', winMultiplier: -0.5, probability: 0.12 },
+                { name: '×-2',   color: '#b87aff', winMultiplier: -2,  probability: 0.10 },
+                { name: '×3',    color: '#8a2be2', winMultiplier: 3,   probability: 0.08 },
+                { name: '×-3',   color: '#4b0082', winMultiplier: -3,  probability: 0.08 }
+            ];
+
+            const totalProb = SECTORS.reduce((acc, s) => acc + s.probability, 0);
+            if (Math.abs(totalProb - 1.0) > 0.001) {
+                SECTORS.forEach(s => s.probability = s.probability / totalProb);
+            }
+
+            // ---- Состояние ----
+            let balance = 1000;
+            let currentBet = 100;
+            let isSpinning = false;
+            let currentRotation = 0;
+            let spinVelocity = 0;
+            let animationFrame = null;
+            const spinDecay = 0.985;
+            const minSpinVelocity = 0.008;
+            let lastWinAmount = 0;
+
+            // DOM
+            const canvas = document.getElementById('wheelCanvas');
+            const ctx = canvas.getContext('2d');
+            const spinBtn = document.getElementById('spinButton');
+            const withdrawBtn = document.getElementById('withdrawButton');
+            const depositBtn = document.getElementById('depositButton');
+            const balanceDisplay = document.getElementById('balanceDisplay');
+            const betDisplay = document.getElementById('betDisplay');
+            const lastWinDisplay = document.getElementById('lastWinDisplay');
+            const winMessageEl = document.getElementById('winMessage');
+            const chancesGrid = document.getElementById('chancesGrid');
+            const screenFlash = document.getElementById('screenFlash');
+
+            const withdrawModal = document.getElementById('withdrawModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const modalCancelBtn = document.getElementById('modalCancelBtn');
+            const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+            const modalBalanceDisplay = document.getElementById('modalBalanceDisplay');
+            const modalStatus = document.getElementById('modalStatus');
+            const customAmountInput = document.getElementById('customAmountInput');
+            const withdrawOptions = document.querySelectorAll('.withdraw-option');
+
+            const depositModal = document.getElementById('depositModal');
+            const depositCloseBtn = document.getElementById('depositCloseBtn');
+            const depositCancelBtn = document.getElementById('depositCancelBtn');
+            const depositConfirmBtn = document.getElementById('depositConfirmBtn');
+            const depositOptions = document.querySelectorAll('.deposit-option');
+            const depositCustomInput = document.getElementById('depositCustomInput');
+            const depositStatus = document.getElementById('depositStatus');
+
+            const rightsBadge = document.getElementById('rightsBadge');
+            const yarikToast = document.getElementById('yarikToast');
+            const mschvetochek = document.getElementById('mschvetochek');
+
+            let selectedMethod = null;
+            let selectedMin = 0;
+            let selectedDepositAmount = 0;
+
+            const W = 600, H = 600;
+            const centerX = W / 2;
+            const centerY = H / 2;
+            const radius = 260;
+
+            // ---- Отрисовка колеса ----
+            function drawWheel(rotationAngle = 0) {
+                ctx.clearRect(0, 0, W, H);
+
+                ctx.shadowColor = '#000000cc';
+                ctx.shadowBlur = 24;
+                ctx.shadowOffsetY = 6;
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius + 18, 0, 2 * Math.PI);
+                ctx.fillStyle = '#1a0a26';
+                ctx.shadowBlur = 30;
+                ctx.fill();
+
+                ctx.shadowBlur = 10;
+                ctx.shadowOffsetY = 2;
+
+                let startAngle = rotationAngle;
+
+                for (let i = 0; i < SECTORS.length; i++) {
+                    const sector = SECTORS[i];
+                    const sliceAngle = sector.probability * 2 * Math.PI;
+
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+                    ctx.closePath();
+
+                    ctx.fillStyle = sector.color;
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = '#000000cc';
+                    ctx.fill();
+
+                    ctx.strokeStyle = '#e0aaff';
+                    ctx.lineWidth = 2.5;
+                    ctx.shadowBlur = 6;
+                    ctx.stroke();
+
+                    ctx.save();
+                    ctx.translate(centerX, centerY);
+                    ctx.rotate(startAngle + sliceAngle / 2);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.font = 'bold 30px "Segoe UI", "Roboto", sans-serif';
+                    ctx.shadowColor = '#000000';
+                    ctx.shadowBlur = 12;
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+
+                    if (sector.winMultiplier < 0) {
+                        ctx.fillStyle = '#ffb3d1';
+                        ctx.strokeStyle = '#4a0020';
+                    } else {
+                        ctx.fillStyle = '#f3e8ff';
+                        ctx.strokeStyle = '#2a0a3a';
+                    }
+                    ctx.lineWidth = 4;
+                    ctx.strokeText(sector.name, radius * 0.68, 0);
+                    ctx.fillText(sector.name, radius * 0.68, 0);
+                    ctx.restore();
+
+                    startAngle += sliceAngle;
+                }
+
+                ctx.shadowBlur = 20;
+                ctx.shadowOffsetY = 0;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 68, 0, 2 * Math.PI);
+                ctx.fillStyle = '#12051f';
+                ctx.fill();
+                ctx.strokeStyle = '#c77dff';
+                ctx.lineWidth = 10;
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 45, 0, 2 * Math.PI);
+                ctx.fillStyle = '#2a1040';
+                ctx.fill();
+                ctx.strokeStyle = '#e0aaff';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.shadowColor = 'transparent';
+            }
+
+            // ---- UI ----
+            function updateUI() {
+                balanceDisplay.textContent = Math.round(balance * 100) / 100;
+                betDisplay.textContent = currentBet;
+                lastWinDisplay.textContent = Math.round(lastWinAmount * 100) / 100;
+
+                balanceDisplay.classList.toggle('negative', balance < 0);
+                lastWinDisplay.classList.toggle('negative', lastWinAmount < 0);
+
+                spinBtn.disabled = isSpinning || balance < currentBet;
+                withdrawBtn.disabled = isSpinning || balance <= 0;
+                depositBtn.disabled = isSpinning;
+
+                if (withdrawModal.classList.contains('active')) {
+                    modalBalanceDisplay.textContent = Math.round(balance * 100) / 100;
+                }
+            }
+
+            // ---- Сектор ----
+            function getSectorByAngle(rotation) {
+                const pointerAngle = -Math.PI / 2;
+                let normRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+                let angleInWheel = (pointerAngle - normRotation + 2 * Math.PI) % (2 * Math.PI);
+
+                let accumulated = 0;
+                for (let i = 0; i < SECTORS.length; i++) {
+                    const slice = SECTORS[i].probability * 2 * Math.PI;
+                    if (angleInWheel >= accumulated && angleInWheel < accumulated + slice) {
+                        return i;
+                    }
+                    accumulated += slice;
+                }
+                return SECTORS.length - 1;
+            }
+
+            // ---- Эффекты выигрыша ----
+            function spawnCoins(count) {
+                const emojis = ['💰', '💎', '🪙', '⭐', '💜'];
+                for (let i = 0; i < count; i++) {
+                    const coin = document.createElement('div');
+                    coin.className = 'coin-popup';
+                    coin.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+                    const startX = window.innerWidth / 2 + (Math.random() - 0.5) * 200;
+                    const startY = window.innerHeight / 2 + (Math.random() - 0.5) * 100;
+
+                    coin.style.left = startX + 'px';
+                    coin.style.top = startY + 'px';
+
+                    const tx = (Math.random() - 0.5) * 400;
+                    const ty = -100 - Math.random() * 200;
+                    coin.style.setProperty('--tx', tx + 'px');
+                    coin.style.setProperty('--ty', ty + 'px');
+
+                    coin.style.animationDelay = (i * 0.06) + 's';
+
+                    document.body.appendChild(coin);
+
+                    setTimeout(() => coin.remove(), 2000 + i * 60);
+                }
+            }
+
+            function triggerWinEffects() {
+                screenFlash.className = 'screen-flash';
+                void screenFlash.offsetWidth;
+                screenFlash.classList.add('win-flash');
+
+                winMessageEl.classList.remove('win-anim', 'lose-anim');
+                void winMessageEl.offsetWidth;
+                winMessageEl.classList.add('win-anim');
+
+                spawnCoins(12);
+
+                balanceDisplay.classList.remove('bump');
+                void balanceDisplay.offsetWidth;
+                balanceDisplay.classList.add('bump');
+
+                if (navigator.vibrate) navigator.vibrate([50, 30, 80]);
+            }
+
+            function triggerLoseEffects() {
+                screenFlash.className = 'screen-flash';
+                void screenFlash.offsetWidth;
+                screenFlash.classList.add('lose-flash');
+
+                winMessageEl.classList.remove('win-anim', 'lose-anim');
+                void winMessageEl.offsetWidth;
+                winMessageEl.classList.add('lose-anim');
+
+                balanceDisplay.classList.remove('bump');
+                void balanceDisplay.offsetWidth;
+                balanceDisplay.classList.add('bump');
+
+                if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
+            }
+
+            // ---- Выигрыш ----
+            function applyWin(sectorIndex) {
+                const sector = SECTORS[sectorIndex];
+                const winAmount = currentBet * sector.winMultiplier;
+                balance += winAmount;
+                lastWinAmount = winAmount;
+
+                if (winAmount > 0) {
+                    winMessageEl.textContent = `ВЫИГРЫШ ${sector.name} = +${winAmount.toFixed(0)} ₽`;
+                    winMessageEl.style.color = '#e0aaff';
+                    winMessageEl.style.textShadow = '0 0 25px #c77dff, 0 0 45px #9b5de5';
+                    triggerWinEffects();
+                } else if (winAmount < 0) {
+                    winMessageEl.textContent = `ПРОИГРЫШ ${sector.name} = ${winAmount.toFixed(0)} ₽`;
+                    winMessageEl.style.color = '#ff7aa2';
+                    winMessageEl.style.textShadow = '0 0 25px #ff3a7a, 0 0 45px #ff0055';
+                    triggerLoseEffects();
+                } else {
+                    winMessageEl.textContent = `×0 — СТАВКА ВОЗВРАЩЕНА`;
+                    winMessageEl.style.color = '#b794d4';
+                    winMessageEl.style.textShadow = '0 0 15px #9b5de5';
+                }
+
+                updateUI();
+            }
+
+            // ---- Вращение ----
+            function startSpin() {
+                if (isSpinning) return;
+                if (balance < currentBet) {
+                    winMessageEl.textContent = 'Недостаточно средств!';
+                    winMessageEl.style.color = '#ff7aa2';
+                    return;
+                }
+
+                balance -= currentBet;
+                updateUI();
+
+                lastWinAmount = 0;
+                lastWinDisplay.textContent = '0';
+
+                spinVelocity = 0.25 + Math.random() * 0.3;
+                isSpinning = true;
+                spinBtn.disabled = true;
+                withdrawBtn.disabled = true;
+                depositBtn.disabled = true;
+                winMessageEl.textContent = 'Крутится...';
+                winMessageEl.style.color = '#b794d4';
+
+                function spinAnimation() {
+                    if (!isSpinning) return;
+
+                    currentRotation += spinVelocity;
+                    spinVelocity *= spinDecay;
+
+                    drawWheel(currentRotation);
+
+                    if (Math.abs(spinVelocity) < minSpinVelocity) {
+                        spinVelocity = 0;
+                        isSpinning = false;
+
+                        const sectorIndex = getSectorByAngle(currentRotation);
+                        applyWin(sectorIndex);
+
+                        updateUI();
+                        drawWheel(currentRotation);
+                        return;
+                    }
+
+                    animationFrame = requestAnimationFrame(spinAnimation);
+                }
+
+                if (animationFrame) cancelAnimationFrame(animationFrame);
+                animationFrame = requestAnimationFrame(spinAnimation);
+            }
+
+            // ---- Вывод ----
+            function openWithdrawModal() {
+                modalBalanceDisplay.textContent = Math.round(balance * 100) / 100;
+                selectedMethod = null;
+                selectedMin = 0;
+                customAmountInput.value = '';
+                withdrawOptions.forEach(o => o.classList.remove('selected'));
+                modalConfirmBtn.disabled = true;
+                modalStatus.textContent = '';
+                modalStatus.className = 'modal-status';
+                withdrawModal.classList.add('active');
+            }
+
+            function closeWithdrawModal() {
+                withdrawModal.classList.remove('active');
+            }
+
+            function updateWithdrawConfirmState() {
+                const customVal = parseFloat(customAmountInput.value);
+                let amount = 0;
+
+                if (!isNaN(customVal) && customVal > 0) {
+                    amount = customVal;
+                } else if (selectedMethod) {
+                    amount = balance;
+                }
+
+                const valid = selectedMethod && amount > 0 && amount <= balance && amount >= selectedMin;
+
+                if (selectedMethod && amount > 0) {
+                    if (amount < selectedMin) {
+                        modalStatus.textContent = `Минимум для этого способа: ${selectedMin} ₽`;
+                        modalStatus.className = 'modal-status error';
+                    } else if (amount > balance) {
+                        modalStatus.textContent = `Недостаточно средств. Доступно: ${balance.toFixed(0)} ₽`;
+                        modalStatus.className = 'modal-status error';
+                    } else {
+                        modalStatus.textContent = `К выводу: ${amount.toFixed(0)} ₽`;
+                        modalStatus.className = 'modal-status success';
+                    }
+                } else {
+                    modalStatus.textContent = selectedMethod ? 'Введите сумму' : 'Выберите способ вывода';
+                    modalStatus.className = 'modal-status';
+                }
+
+                modalConfirmBtn.disabled = !valid;
+            }
+
+            withdrawOptions.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    withdrawOptions.forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    selectedMethod = opt.dataset.method;
+                    selectedMin = parseFloat(opt.dataset.min) || 0;
+                    updateWithdrawConfirmState();
+                });
+            });
+
+            customAmountInput.addEventListener('input', updateWithdrawConfirmState);
+
+            modalConfirmBtn.addEventListener('click', () => {
+                const customVal = parseFloat(customAmountInput.value);
+                let amount = (!isNaN(customVal) && customVal > 0) ? customVal : balance;
+
+                if (!selectedMethod || amount <= 0 || amount > balance || amount < selectedMin) return;
+
+                const methodNames = { card: 'Банковскую карту', crypto: 'Крипто-кошелёк', wallet: 'Электронный кошелёк' };
+
+                balance -= amount;
+                updateUI();
+
+                modalStatus.textContent = `✅ ${amount.toFixed(0)} ₽ выведено на ${methodNames[selectedMethod]}`;
+                modalStatus.className = 'modal-status success';
+
+                winMessageEl.textContent = `ВЫВЕДЕНО ${amount.toFixed(0)} ₽`;
+                winMessageEl.style.color = '#c77dff';
+                winMessageEl.style.textShadow = '0 0 25px #e0aaff, 0 0 45px #9b5de5';
+
+                modalConfirmBtn.disabled = true;
+
+                setTimeout(() => closeWithdrawModal(), 1600);
+            });
+
+            modalCloseBtn.addEventListener('click', closeWithdrawModal);
+            modalCancelBtn.addEventListener('click', closeWithdrawModal);
+            withdrawModal.addEventListener('click', (e) => {
+                if (e.target === withdrawModal) closeWithdrawModal();
+            });
+
+            // ---- Пополнение ----
+            function openDepositModal() {
+                selectedDepositAmount = 0;
+                depositCustomInput.value = '';
+                depositOptions.forEach(o => o.classList.remove('selected'));
+                depositConfirmBtn.disabled = true;
+                depositStatus.textContent = '';
+                depositStatus.className = 'modal-status';
+                depositModal.classList.add('active');
+            }
+
+            function closeDepositModal() {
+                depositModal.classList.remove('active');
+            }
+
+            function updateDepositConfirmState() {
+                const customVal = parseFloat(depositCustomInput.value);
+                let amount = 0;
+
+                if (!isNaN(customVal) && customVal > 0) {
+                    amount = customVal;
+                } else if (selectedDepositAmount > 0) {
+                    amount = selectedDepositAmount;
+                }
+
+                const valid = amount >= 100;
+
+                if (amount > 0) {
+                    if (amount < 100) {
+                        depositStatus.textContent = 'Минимальная сумма пополнения: 100 ₽';
+                        depositStatus.className = 'modal-status error';
+                    } else {
+                        depositStatus.textContent = `К пополнению: ${amount.toFixed(0)} ₽`;
+                        depositStatus.className = 'modal-status success';
+                    }
+                } else {
+                    depositStatus.textContent = 'Выберите сумму или введите свою';
+                    depositStatus.className = 'modal-status';
+                }
+
+                depositConfirmBtn.disabled = !valid;
+            }
+
+            depositOptions.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    depositOptions.forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    selectedDepositAmount = parseFloat(opt.dataset.amount);
+                    depositCustomInput.value = '';
+                    updateDepositConfirmState();
+                });
+            });
+
+            depositCustomInput.addEventListener('input', () => {
+                if (depositCustomInput.value) {
+                    depositOptions.forEach(o => o.classList.remove('selected'));
+                    selectedDepositAmount = 0;
+                }
+                updateDepositConfirmState();
+            });
+
+            depositConfirmBtn.addEventListener('click', () => {
+                const customVal = parseFloat(depositCustomInput.value);
+                let amount = (!isNaN(customVal) && customVal > 0) ? customVal : selectedDepositAmount;
+
+                if (amount < 100) return;
+
+                balance += amount;
+                updateUI();
+
+                depositStatus.textContent = `✅ Баланс пополнен на ${amount.toFixed(0)} ₽`;
+                depositStatus.className = 'modal-status success';
+
+                winMessageEl.textContent = `ПОПОЛНЕНО +${amount.toFixed(0)} ₽`;
+                winMessageEl.style.color = '#c77dff';
+                winMessageEl.style.textShadow = '0 0 25px #e0aaff, 0 0 45px #9b5de5';
+
+                depositConfirmBtn.disabled = true;
+
+                setTimeout(() => closeDepositModal(), 1400);
+            });
+
+            depositCloseBtn.addEventListener('click', closeDepositModal);
+            depositCancelBtn.addEventListener('click', closeDepositModal);
+            depositModal.addEventListener('click', (e) => {
+                if (e.target === depositModal) closeDepositModal();
+            });
+
+            // ---- "права фиксичка" ----
+            let yarikTimeout = null;
+            rightsBadge.addEventListener('click', () => {
+                yarikToast.classList.add('active');
+                if (yarikTimeout) clearTimeout(yarikTimeout);
+                yarikTimeout = setTimeout(() => {
+                    yarikToast.classList.remove('active');
+                }, 1800);
+            });
+
+            // ---- Клик на Mschvetochek → знаки вопроса ----
+            function spawnQuestionMarks(count) {
+                const rect = mschvetochek.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                for (let i = 0; i < count; i++) {
+                    setTimeout(() => {
+                        const q = document.createElement('div');
+                        q.className = 'question-mark';
+                        q.textContent = '?';
+
+                        const offsetX = (Math.random() - 0.5) * 300;
+                        const offsetY = -50 - Math.random() * 150;
+                        const rotation = (Math.random() - 0.5) * 90;
+
+                        q.style.left = centerX + 'px';
+                        q.style.top = centerY + 'px';
+                        q.style.setProperty('--tx', offsetX + 'px');
+                        q.style.setProperty('--ty', offsetY + 'px');
+                        q.style.setProperty('--rot', rotation + 'deg');
+
+                        document.body.appendChild(q);
+
+                        setTimeout(() => q.remove(), 1500);
+                    }, i * 100);
+                }
+            }
+
+            mschvetochek.addEventListener('click', () => {
+                spawnQuestionMarks(7);
+                if (navigator.vibrate) navigator.vibrate(40);
+            });
+
+            // ---- Панель шансов ----
+            function buildChancesGrid() {
+                chancesGrid.innerHTML = '';
+                SECTORS.forEach(sector => {
+                    const card = document.createElement('div');
+                    card.className = 'chance-card';
+
+                    const colorDiv = document.createElement('div');
+                    colorDiv.className = 'chance-color';
+                    colorDiv.style.backgroundColor = sector.color;
+                    colorDiv.style.color = sector.color;
+
+                    const nameSpan = document.createElement('div');
+                    nameSpan.className = 'chance-name';
+                    if (sector.winMultiplier < 0) nameSpan.classList.add('negative');
+                    nameSpan.textContent = sector.name;
+
+                    const probSpan = document.createElement('div');
+                    probSpan.className = 'chance-prob';
+                    probSpan.textContent = (sector.probability * 100).toFixed(0) + '%';
+
+                    card.appendChild(colorDiv);
+                    card.appendChild(nameSpan);
+                    card.appendChild(probSpan);
+                    chancesGrid.appendChild(card);
+                });
+            }
+
+            // ---- Инициализация ----
+            function init() {
+                drawWheel(currentRotation);
+                buildChancesGrid();
+                updateUI();
+
+                spinBtn.addEventListener('click', startSpin);
+                withdrawBtn.addEventListener('click', openWithdrawModal);
+                depositBtn.addEventListener('click', openDepositModal);
+                canvas.addEventListener('click', () => {
+                    if (!isSpinning && balance >= currentBet) startSpin();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        closeWithdrawModal();
+                        closeDepositModal();
+                    }
+                });
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
